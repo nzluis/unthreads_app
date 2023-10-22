@@ -202,41 +202,36 @@ export async function fetchThreadById(threadId: string) {
     }
 }
 
-// export async function addCommentToThread(
-//     threadId: string,
-//     commentText: string,
-//     userId: string,
-//     path: string
-// ) {
-//     connectToDB();
+export async function addCommentToThread(
+    threadId: string,
+    commentText: string,
+    userId: string,
+    path: string
+) {
+    connectToDB();
 
-//     try {
-//         // Find the original thread by its ID
-//         const originalThread = await Thread.findById(threadId);
+    try {
+        const originalThread = await Thread.findById(threadId);
 
-//         if (!originalThread) {
-//             throw new Error("Thread not found");
-//         }
+        if (!originalThread) {
+            throw new Error("Thread not found");
+        }
 
-//         // Create the new comment thread
-//         const commentThread = new Thread({
-//             text: commentText,
-//             author: userId,
-//             parentId: threadId, // Set the parentId to the original thread's ID
-//         });
+        const commentThread = new Thread({
+            text: commentText,
+            author: userId,
+            parentId: threadId, // Set the parentId to the original thread's ID
+        });
 
-//         // Save the comment thread to the database
-//         const savedCommentThread = await commentThread.save();
+        const savedCommentThread = await commentThread.save();
 
-//         // Add the comment thread's ID to the original thread's children array
-//         originalThread.children.push(savedCommentThread._id);
+        originalThread.children.push(savedCommentThread._id);
 
-//         // Save the updated original thread to the database
-//         await originalThread.save();
+        await originalThread.save();
 
-//         revalidatePath(path);
-//     } catch (err) {
-//         console.error("Error while adding comment:", err);
-//         throw new Error("Unable to add comment");
-//     }
-// }
+        revalidatePath(path);
+    } catch (err) {
+        console.error("Error while adding comment:", err);
+        throw new Error("Unable to add comment");
+    }
+}
